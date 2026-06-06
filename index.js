@@ -710,8 +710,8 @@ class Creator {
       maxLength = 20,
 	  textAlign = 'center',
       textShadow = false,
-	  x: '50%',
-	  y: '85%', 
+	  x = '50%',
+	  y = '85%', 
 	  position,
       animations = ['fadeIn'],
     } = el;

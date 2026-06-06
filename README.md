@@ -502,6 +502,130 @@ creator.bgm(null);
 
 ---
 
+## 素材获取（Resource）
+
+`resource.js` 提供网络素材搜索功能，用于自动获取视频、图片等资源。
+
+```js
+const resource = require('./resource');
+```
+
+### searchBaiduImage - 百度图片搜索
+
+```js
+// 搜索关键词图片
+const images = await resource.searchBaiduImage('风景');
+console.log(images);
+// 返回格式:
+// [
+//   { url: '图片地址', width: 1920, height: 1080, ... },
+//   ...
+// ]
+```
+
+**参数：**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `word` | string | 搜索关键词 |
+| `pn` | number | 页码偏移（默认 0）|
+
+### baiduVideos - 百度 AIGC 素材搜索
+
+> ⚠️ **必需先登录百度获取 cookie**
+
+```js
+// 1. 登录 https://aigc.baidu.com 后，在浏览器开发者工具中复制 Cookie
+// 2. 传入 header.cookie 参数
+
+const videos = await resource.baiduVideos('科技', {
+  header: {
+    cookie: 'BAIDU_SPS_BROWSER_HISTORY=xxx; BAIDUID=xxx; ...'
+  }
+});
+
+console.log(videos);
+// 返回格式:
+// [
+//   {
+//     id: '素材ID',
+//     title: '素材标题',
+//     url: '视频地址',
+//     coverUrl: '封面图',
+//     duration: 30,      // 时长（秒）
+//     width: 1920,
+//     height: 1080,
+//     source: '来源'
+//   },
+//   ...
+// ]
+
+// 搜索图片素材
+const images = await resource.baiduVideos('风景', { 
+  type: 'image',
+  header: { cookie: '...' }
+});
+```
+
+**参数：**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `text` | string | 搜索关键词 |
+| `options.header.cookie` | string | **必需** - 百度登录后的 Cookie |
+| `options.type` | string | `'video'` 或 `'image'`（默认 `'video'`）|
+| `options.pc` | string | `'pc'` 时使用桌面端 API |
+
+**返回字段：**
+
+| 字段 | 说明 |
+|------|------|
+| `id` | 素材唯一标识 |
+| `title` | 素材标题 |
+| `url` | 资源下载地址 |
+| `coverUrl` | 封面/缩略图 |
+| `duration` | 视频时长（图片为 0）|
+| `width` / `height` | 尺寸 |
+| `source` | 来源平台 |
+
+### 使用示例
+
+```js
+const Creator = require('./index');
+const resource = require('./resource');
+
+async function createVideo() {
+  // 1. 先登录 https://aigc.baidu.com 获取 Cookie
+  // 2. 传入 header.cookie
+  
+  const videos = await resource.baiduVideos('科技视频', {
+    header: { cookie: '你的百度Cookie' }
+  });
+  const images = await resource.baiduVideos('自然风景', { 
+    type: 'image',
+    header: { cookie: '你的百度Cookie' }
+  });
+
+  const creator = new Creator({ width: 1920, height: 1080 });
+
+  // 使用搜索到的素材
+  if (videos.length > 0) {
+    creator.addSlide({
+      duration: videos[0].duration,
+      elements: [
+        { type: 'video', src: videos[0].url }
+      ]
+    });
+  }
+
+  await creator.render('./output/video.mp4');
+}
+
+createVideo();
+```
+
+---
+
 ## 示例
 
 ### basic.js — 完整示例（推荐）
@@ -552,6 +676,7 @@ fomo/
 ├── index.js         # Creator 主类（链式 API + render）
 ├── calculator.js    # SceneTimeCalculator（时间线自动排列）
 ├── tts.js           # MiniMax TTS 封装
+├── resource.js      # 网络素材搜索（百度图片/视频）
 ├── package.json
 └── examples/
     ├── basic.js     # 完整示例

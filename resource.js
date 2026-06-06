@@ -64,6 +64,7 @@ exports.searchBaiduImage = async function(word, pn = 0) {
  * @param {string} text - 搜索关键词
  * @param {string} px - 平台类型 'pc' 或其他
  * @param {string} type - 类型 'video' 或 'image'，默认 'video'
+ * @param {Object} header - 请求头配置（必需包含 cookie）
  * @returns {Promise<Array>} 素材列表
  */
 exports.baiduVideos = async function(text, options={}) {
@@ -72,7 +73,13 @@ exports.baiduVideos = async function(text, options={}) {
         console.error('搜索关键词不能为空');
         return [];
     }
-    const {pc,type="video",header={}} = options
+    const { pc, type = "video", header = {} } = options;
+    
+    // 检查 cookie
+    if (!header.cookie) {
+        console.error('[BAIDU_VIDEOS] 缺少 cookie，请先登录百度后获取');
+        return [];
+    }
     try {
         const plateType = pc === 'pc' ? 3 : 1;
         const params = new URLSearchParams({

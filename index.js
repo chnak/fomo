@@ -653,6 +653,10 @@ class Creator {
     } = el;
 
     switch (type) {
+	  case 'bg':
+	  case 'background':
+        scene.addBackground({...rest});
+        break;
       case 'text':
         scene.addText(withDefaultAnchor({ ...rest, startTime }));
         break;

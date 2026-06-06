@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "fkbuilder": "1.1.74",
+    "minimax-speech-ts": "^0.4.1"
+  }
+}

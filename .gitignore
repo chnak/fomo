@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.foliko
+# Output files
+output/
+*.mp4
+*.gif
+*.png
+*.jpg
+*.jpeg
+package-lock.json
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+assets/
+# Temporary files
+*.tmp
+*.temp
+.null*
+nul

@@ -9,7 +9,8 @@
  */
 
 const path = require('path');
-const Creator = require('../index');
+const {Creator,resource} = require('../index');
+
 const colors = {
   deepRed: '#8B0000',        // 深红色 - 碧血、殉葬
   bloodRed: '#DC143C',       // 血红色 - 血色、悲壮
@@ -28,6 +29,8 @@ const colors = {
   starWhite: '#E6E6FA',      // 星白色 - 星星
 };
 async function main() {
+	
+	
   const creator = new Creator({
     width: 1280,
     height: 720,

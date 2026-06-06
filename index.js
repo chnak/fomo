@@ -20,6 +20,7 @@
  */
 
 const { VideoBuilder } = require('fkbuilder');
+const resource = require('./resource.js')
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
@@ -1134,4 +1135,4 @@ class Creator {
   }
 }
 
-module.exports = Creator;
+module.exports = {Creator,resource};

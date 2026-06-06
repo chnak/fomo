@@ -1,4 +1,11 @@
 {
+  "name": "fomo",
+  "version": "0.0.1",
+  "description": "fomo 视频模板",
+  "main": "index.js",
+  "type": "commonjs",
+  "author": "chnak",
+  "license": "MIT",
   "dependencies": {
     "fkbuilder": "1.1.74",
     "minimax-speech-ts": "^0.4.1"

@@ -145,11 +145,15 @@ const creator = new Creator({
 creator.addCover({
   title: '欢迎观看',                    // 主标题
   subtitle: '2025 年度总结',            // 副标题
-  background: '#1a1a2e',               // 背景色，默认 #1a1a2e
+  background: '#1a1a2e',               // 背景色（无 image 时生效）
   duration: 3,                         // 片头时长（秒），默认 3
   transition: 'fade',                   // 转场名称，传 null 禁用；未指定时由 randomTransition.enabled 决定
   titleStyle: { fontSize: 72, color: '#ffe66d' },  // 主标题样式覆盖
   subtitleStyle: { fontSize: 36, color: '#ffffff' }, // 副标题样式覆盖
+  image: {                             // 图片背景（覆盖 background）
+    src: './images/cover.jpg',         // 图片路径
+    fit: 'cover',                      // 填充方式：'cover' | 'contain' | 'fill'
+  },
 });
 ```
 
@@ -200,8 +204,12 @@ creator.addSlide({
 creator.addFooter({
   title: '谢谢观看',                    // 主标题
   subtitle: '请点赞、关注、转发',        // 副标题
-  background: '#000000',               // 背景色，默认 #000000
+  background: '#000000',               // 背景色（无 image 时生效）
   duration: 3,                         // 片尾时长（秒），默认 3
+  image: {                             // 图片背景（覆盖 background）
+    src: './images/footer.jpg',        // 图片路径
+    fit: 'cover',                      // 填充方式：'cover' | 'contain' | 'fill'
+  },
 });
 ```
 

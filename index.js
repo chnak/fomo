@@ -708,7 +708,7 @@ class Creator {
       fontSize = 48,
       color = '#ffffff',
       maxLength = 20,
-	  textAlign: 'center',
+	  textAlign = 'center',
       textShadow = false,
 	  x: '50%',
 	  y: '85%', 

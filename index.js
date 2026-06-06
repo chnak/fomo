@@ -161,6 +161,26 @@ class Creator {
     this.slides = [];
     this.footer = null;
 
+    /**
+     * 背景音乐配置
+     * @param {string}   options.backgroundMusic.src       音频文件路径
+     * @param {number}  [options.backgroundMusic.volume=80]  音量 0~100
+     * @param {number}  [options.backgroundMusic.fadeIn=0.5]  入场淡入（秒）
+     * @param {number}  [options.backgroundMusic.fadeOut=0.5] 出场淡出（秒）
+     * @param {boolean} [options.backgroundMusic.loop=true]    音乐短于视频时是否循环
+     */
+    this.backgroundMusic = options.backgroundMusic
+      ? {
+          src: options.backgroundMusic.src,
+          volume: options.backgroundMusic.volume ?? 80,
+          fadeIn: options.backgroundMusic.fadeIn ?? 0.5,
+          fadeOut: options.backgroundMusic.fadeOut ?? 0.5,
+          loop: options.backgroundMusic.loop ?? true,
+          startTime: options.backgroundMusic.startTime ?? 0,
+          endTime: options.backgroundMusic.endTime ?? null,
+        }
+      : null;
+
     this._builder = null;
     this._built = false;
     this._ttsAudioFiles = []; // 渲染结束后统一清理
@@ -323,10 +343,91 @@ class Creator {
       }
     }
 
+    // 所有 section 构建完毕，currentTime 即为视频总时长
+    if (this.backgroundMusic && this.backgroundMusic.src) {
+      await this._addBackgroundMusic(mainTrack, currentTime);
+    }
+
     this._built = true;
     return this._builder;
   }
 
+  /**
+   * 设置/替换背景音乐（链式调用）
+   * @param {Object} config  背景音乐配置，同构造函数 backgroundMusic
+   * @returns {Creator} this
+   */
+  setBackgroundMusic(config) {
+    if (!config || !config.src) {
+      this.backgroundMusic = null;
+    } else {
+      this.backgroundMusic = {
+        src: config.src,
+        volume: config.volume ?? 80,
+        fadeIn: config.fadeIn ?? 0.5,
+        fadeOut: config.fadeOut ?? 0.5,
+        loop: config.loop ?? true,
+        startTime: config.startTime ?? 0,
+        endTime: config.endTime ?? null,
+		cutFrom:config.cutFrom||0,
+		cutTo:config.cutTo||null
+      };
+    }
+    return this;
+  }
+
+  /**
+   * setBackgroundMusic 的简写别名
+   */
+  bgm(config) {
+    return this.setBackgroundMusic(config);
+  }
+
+
+  /**
+   * 添加背景音乐到独立音乐轨道
+   * @param {number} startTime  视频时间轴：背景音乐从哪个时间点开始播放
+   * @param {number|null} endTime  视频时间轴：背景音乐从哪个时间点结束播放（null=播到视频结尾）
+   */
+  async _addBackgroundMusic(mainTrack, totalDuration) {
+    const { src, volume, fadeIn, fadeOut, loop, startTime = 0, endTime = null,cutFrom=0,cutTo } = this.backgroundMusic;
+    if (!src) return;
+
+
+    // 探测音乐文件时长
+    const musicDuration = await probeMediaDuration(src) || 0;
+    if (!musicDuration) {
+      console.warn('[Creator] 背景音乐 ffprobe 探测失败，跳过');
+      return;
+    }
+	let re_start_time=startTime
+	let re_cut_to=cutTo
+    const musicTrack = this._builder.createTrack({ zIndex: 1, name: 'background-music' });
+	let segDur=musicDuration
+	if(musicDuration>=totalDuration){
+		segDur=totalDuration
+	}
+	if(re_start_time){
+		segDur-=re_start_time
+	}
+	if(!re_cut_to){
+		re_cut_to=segDur
+	}
+	const segDur = Math.min(musicDuration, totalDuration);
+	const scene = musicTrack.createScene({ duration: totalDuration, startTime: 0 });
+	scene.addAudio({
+		src:src,
+		volume:volume,
+		fadeIn:fadeIn,
+		fadeOut:fadeOut,
+		loop:loop,
+		startTime:re_start_time,
+		duration:segDur,
+		cutFrom:cutFrom,
+		cutTo:re_cut_to
+	});
+  }
+    
   /**
    * 渲染并导出视频
    * @param {string} outputPath                    输出视频路径,默认 ./output/video.mp4
@@ -887,6 +988,47 @@ class Creator {
       elementCount: totalElementCount,
       sections: resultSections,
     };
+  }
+
+  /**
+   * 获取视频总时长(秒)
+   * @returns {number} 总时长(秒)
+   */
+  getTotalDuration() {
+    const cover = this.cover;
+    const footer = this.footer;
+
+    // 计算 cover 时长
+    let total = (cover && cover.duration) ? cover.duration : 3;
+
+    // 累加所有 slide
+    for (const slide of this.slides) {
+      if (slide.duration != null) {
+        total += slide.duration;
+      } else if (slide.elements && slide.elements.length > 0) {
+        // 估算:取最后一个元素的 startTime + duration
+        let lastEnd = 0;
+        for (const el of slide.elements) {
+          const elEnd = (el.startTime || 0) + (el.duration || DEFAULT_ELEMENT_DURATION);
+          if (elEnd > lastEnd) lastEnd = elEnd;
+        }
+        total += Math.max(lastEnd, 1);
+      } else {
+        total += 1;
+      }
+    }
+
+    // 累加 footer 时长
+    total += (footer && footer.duration) ? footer.duration : 3;
+
+    // 减去转场重叠部分(最后一个 section + footer 不减)
+    const TRANSITION_DURATION = 0.5;
+    const sectionCount = (cover ? 1 : 0) + this.slides.length + (footer ? 1 : 0);
+    if (sectionCount > 1) {
+      total -= TRANSITION_DURATION * (sectionCount - 1);
+    }
+
+    return Math.max(0, total);
   }
 
   /**

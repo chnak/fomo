@@ -123,6 +123,15 @@ const creator = new Creator({
     enabled: false,       // 开启后，每个未显式指定 transition 的场景随机选择转场
     animations: false,    // 开启后，未指定 animations 的元素随机选择一个入场动画
   },
+  backgroundMusic: {      // 背景音乐配置
+    src: './music.mp3',   // 音频文件路径（支持 mp3/wav 等格式）
+    volume: 80,           // 音量 0~100，默认 80
+    fadeIn: 0.5,          // 入场淡入（秒），默认 0.5
+    fadeOut: 0.5,         // 出场淡出（秒），默认 0.5
+    loop: true,            // 音乐短于视频时是否循环拼接，默认 true
+    startTime: 0,         // 背景音乐在视频的哪个时间点开始播放，默认 0
+    endTime: null,        // 背景音乐在视频的哪个时间点结束播放，默认 null 表示播到视频结尾
+  },
 });
 ```
 
@@ -426,6 +435,70 @@ const creator = new Creator({
   animations: ['fadeIn', 'slideUp'], // 动画名称数组
 }
 ```
+
+---
+
+## 背景音乐
+
+背景音乐放置在独立的 `background-music` 轨道（zIndex: 1），与 TTS 音频轨道（zIndex: 0）分开，不会相互干扰。
+
+### 配置方式
+
+**方式一：构造函数传入**
+
+```js
+const creator = new Creator({
+  backgroundMusic: {
+    src: './bgm.mp3',     // 必填：音频文件路径
+    volume: 80,            // 音量 0~100
+    fadeIn: 0.5,           // 入场淡入（秒）
+    fadeOut: 0.5,          // 出场淡出（秒）
+    loop: true,            // 音乐短于视频时循环拼接
+  }
+});
+```
+
+**方式二：链式调用（可中途添加或替换）**
+
+```js
+// 完整写法
+creator.setBackgroundMusic({ src: './bgm.mp3', volume: 70 });
+// 简写别名（功能完全相同）
+creator.bgm({ src: './bgm.mp3', volume: 70 });
+// 清除背景音乐
+creator.bgm(null);
+```
+
+### 时长处理
+
+| 场景 | 处理方式 |
+|------|----------|
+| 音乐时长 = 视频时长 | 直接使用，无截断 |
+| 音乐时长 < 视频时长 | 自动循环拼接至覆盖全片 |
+| 音乐时长 > 视频时长 | 截断至视频总时长 |
+
+### startTime / endTime（视频时间轴控制）
+    
+    ```js
+    creator.bgm({
+      src: './long-music.mp3',
+      volume: 80,
+      startTime: 10,   // 背景音乐在视频的 10s 处开始播放
+      endTime: 30,     // 背景音乐在视频的 30s 处停止播放
+      loop: true,
+    });
+    ```
+    
+    - `startTime`：背景音乐在视频的哪个时间点开始播放（默认 0）
+    - `endTime`：背景音乐在视频的哪个时间点结束播放（默认 null，表示播到视频结尾）
+    - 音频文件本身从开头播放，不裁剪音乐内容
+    - 循环时，以 `[startTime, endTime]` 区间为基准进行循环拼接
+    
+### 淡入淡出
+
+- 首段音频片段自动加 `fadeIn`
+- 末段音频片段自动加 `fadeOut`
+- 中间循环段落不加淡入淡出，保证音乐连贯
 
 ---
 

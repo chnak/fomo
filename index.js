@@ -540,27 +540,15 @@ class Creator {
       startTime,
     });
 
-    if (section.background) {
-      scene.addBackground({ color: section.background });
-    }
-
-    // 5. cover / footer 的图片(如果有)
+    // 4.1 cover / footer 的图片背景(如果有)
     if (section._kind !== 'slide' && section.image) {
-      const imgConfig = {
+      scene.addBackground({
         src: section.image.src,
-        x: section.image.x || '50%',
-        y: section.image.y || '50%',
-        width: section.image.width || '100%',
-        height: section.image.height || '100%',
         fit: section.image.fit || 'cover',
-        animations: section.image.animations || ['fadeIn'],
-        ...section.imageStyle,
-      };
-      scene.addImage(withDefaultAnchor({
-        ...imgConfig,
-        duration: sceneDuration,
-        startTime: 0,
-      }));
+      });
+    } else if (section.background) {
+      // 只有没有图片时才使用颜色背景
+      scene.addBackground({ color: section.background });
     }
 
     // 6. cover / footer 的标题与副标题(填满整个场景)

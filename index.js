@@ -707,9 +707,10 @@ class Creator {
       // 字幕显示相关
       fontSize = 48,
       color = '#ffffff',
-      position = 'bottom',
       maxLength = 20,
       textShadow = false,
+	  x: '50%',
+	  y: '85%', 
       animations = ['fadeIn'],
     } = el;
 
@@ -730,7 +731,7 @@ class Creator {
         fadeOut: 0.2,
       });
     }
-
+	
     // 字幕本身(显示用)使用与语音相同的时长
     // 字幕元素自带 position(top/center/bottom) 控制位置,anchor 仅在用户显式传入时生效
     scene.addSubtitle(withDefaultAnchor({
@@ -740,6 +741,8 @@ class Creator {
       position,
       maxLength,
       animations,
+	  x:x,
+	  y:y,
       ...el,
       duration: audioDuration,
       startTime,

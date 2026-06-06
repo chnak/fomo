@@ -292,6 +292,9 @@ class Creator {
       titleStyle: options.titleStyle || {},
       subtitleStyle: options.subtitleStyle || {},
       transition,
+      // 新增：图片配置
+      image: options.image || null,
+      imageStyle: options.imageStyle || {},
     };
     return this;
   }

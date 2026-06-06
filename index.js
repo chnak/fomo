@@ -413,7 +413,6 @@ class Creator {
 	if(!re_cut_to){
 		re_cut_to=segDur
 	}
-	const segDur = Math.min(musicDuration, totalDuration);
 	const scene = musicTrack.createScene({ duration: totalDuration, startTime: 0 });
 	scene.addAudio({
 		src:src,

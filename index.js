@@ -701,16 +701,18 @@ class Creator {
    *   - 语音作为音频元素放入独立音频轨道,与字幕同步
    */
   async _addSubtitle(scene, audioTrack, el, startTime=0, sceneStartTime) {
-    const {
+    let {
       text,
       volume,
       // 字幕显示相关
       fontSize = 48,
       color = '#ffffff',
       maxLength = 20,
+	  textAlign: 'center',
       textShadow = false,
 	  x: '50%',
 	  y: '85%', 
+	  position,
       animations = ['fadeIn'],
     } = el;
 
@@ -731,16 +733,27 @@ class Creator {
         fadeOut: 0.2,
       });
     }
-	
+	if(position==='bottom'){
+		x="50%"
+		y="85%"
+	}
+	if(position==='top'){
+		x="50%"
+		y="15%"
+	}
+	if(position==='center'){
+		x="50%"
+		y="50%"
+	}
     // 字幕本身(显示用)使用与语音相同的时长
     // 字幕元素自带 position(top/center/bottom) 控制位置,anchor 仅在用户显式传入时生效
     scene.addSubtitle(withDefaultAnchor({
       text,
       fontSize,
       color,
-      position,
       maxLength,
       animations,
+	  textAlign:textAlign,
 	  x:x,
 	  y:y,
       ...el,

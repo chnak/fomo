@@ -226,6 +226,9 @@ class Creator {
       titleStyle: options.titleStyle || {},
       subtitleStyle: options.subtitleStyle || {},
       transition,
+      // 新增：图片配置
+      image: options.image || null, // { src, x, y, width, height, fit, animations }
+      imageStyle: options.imageStyle || {},
     };
     return this;
   }
@@ -538,7 +541,26 @@ class Creator {
       scene.addBackground({ color: section.background });
     }
 
-    // 5. cover / footer 的标题与副标题(填满整个场景)
+    // 5. cover / footer 的图片(如果有)
+    if (section._kind !== 'slide' && section.image) {
+      const imgConfig = {
+        src: section.image.src,
+        x: section.image.x || '50%',
+        y: section.image.y || '50%',
+        width: section.image.width || '100%',
+        height: section.image.height || '100%',
+        fit: section.image.fit || 'cover',
+        animations: section.image.animations || ['fadeIn'],
+        ...section.imageStyle,
+      };
+      scene.addImage(withDefaultAnchor({
+        ...imgConfig,
+        duration: sceneDuration,
+        startTime: 0,
+      }));
+    }
+
+    // 6. cover / footer 的标题与副标题(填满整个场景)
     if (section._kind !== 'slide') {
       if (section.title) {
         scene.addText(withDefaultAnchor({

@@ -32,6 +32,10 @@ async function main() {
     width: 1280,
     height: 720,
     fps: 30,
+	randomTransition: {
+      enabled: true,      // 开启后，未指定 transition 的场景自动随机选转场
+      animations: true,   // 开启后，未指定 animations 的元素自动随机选动画
+    },
     tts: {
       // 留空时从环境变量 MINIMAX_API_KEY 读取
       voice: 'female-shaonv-jingpin',
@@ -44,15 +48,13 @@ async function main() {
   creator.addCover({
     title: '我的第一个视频',
     subtitle: '使用 fkbuilder + TTS 制作',
-    duration: 3,
-    transition: 'fade',
+    duration: 3
   });
 
   // 2) 第一个内容页 - 包含会朗读的字幕
   creator.addSlide({
     background: '#0f3460',
     duration: 6,
-    transition: 'fade',
     elements: [
       {
 		startTime:0,
@@ -94,7 +96,6 @@ async function main() {
   creator.addSlide({
     background: '#16213e',
     duration: 5,
-    transition: 'CrossZoom',
     elements: [
       { type: 'rect', x: '50%', y: '50%', width: 600, height: 360, fillColor: '#e94560', borderRadius: 20, anchor: [0.5, 0.5], animations: ['bigIn'] },
       {type: 'text', text: '静态文字 + 形状', x: '50%', y: '50%', fontSize: 48, color: '#ffffff', textAlign: 'center', anchor: [0.5, 0.5] },

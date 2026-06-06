@@ -26,7 +26,56 @@ const { exec } = require('child_process');
 const SceneTimeCalculator = require('./calculator.js');
 // 加载 TTS 模块(失败时降级为不使用 TTS)
 const tts = require('./tts.js');
-
+const PRESET_ANIMATIONS=[
+  'fadeIn',            'fadeOut',         'slideInTop',
+  'slideInBottom',     'slideInLeft',     'slideInRight',
+  'slideOutTop',       'slideOutBottom',  'slideOutLeft',
+  'slideOutRight',     'zoomIn',          'zoomOut',
+  'bigIn',             'bigOut',          'rotateIn',
+  'rotateOut',         'fadeInUp',        'fadeInDown',
+  'fadeOutUp',         'fadeOutDown',     'bounceIn',
+  'bounceOut',         'rotateInLeft',    'rotateInRight',
+  'rotateOutLeft',     'rotateOutRight',  'zoomInFade',
+  'zoomOutFade',       'zoomRotateIn',    'zoomRotateOut',
+  'bounceInUp',        'bounceInDown',    'bounceInLeft',
+  'bounceInRight',     'bounceOutUp',     'bounceOutDown',
+  'zoomInUp',          'zoomInDown',      'zoomInLeft',
+  'zoomInRight',       'zoomOutUp',       'zoomOutDown',
+  'zoomOutLeft',       'zoomOutRight',    'flipInX',
+  'flipInY',           'flipOutX',        'flipOutY',
+  'elasticIn',         'elasticOut',      'swing',
+  'pulse',             'shake',           'flash',
+  'fadeInScale',       'fadeOutScale',    'fadeInRotate',
+  'fadeOutRotate',     'slideFadeInLeft', 'slideFadeInRight',
+  'slideFadeInUp',     'slideFadeInDown', 'slideFadeOutLeft',
+  'slideFadeOutRight', 'slideFadeOutUp',  'slideFadeOutDown'
+]
+const PRESET_TRANSACTIONS=[
+  'Bounce',                'BowTieHorizontal',  'BowTieVertical',
+  'ButterflyWaveScrawler', 'CircleCrop',        'ColourDistance',
+  'CrazyParametricFun',    'CrossZoom',         'Directional',
+  'DoomScreenTransition',  'Dreamy',            'DreamyZoom',
+  'GlitchDisplace',        'GlitchMemories',    'GridFlip',
+  'InvertedPageCurl',      'LinearBlur',        'Mosaic',
+  'PolkaDotsCurtain',      'Radial',            'SimpleZoom',
+  'StereoViewer',          'Swirl',             'WaterDrop',
+  'ZoomInCircles',         'angular',           'burn',
+  'cannabisleaf',          'circle',            'circleopen',
+  'colorphase',            'crosshatch',        'crosswarp',
+  'cube',                  'directionalwarp',   'directionalwipe',
+  'displacement',          'doorway',           'fade',
+  'fadecolor',             'fadegrayscale',     'flyeye',
+  'heart',                 'hexagonalize',      'kaleidoscope',
+  'luma',                  'luminance_melt',    'morph',
+  'multiply_blend',        'perlin',            'pinwheel',
+  'pixelize',              'polar_function',    'randomsquares',
+  'ripple',                'rotate_scale_fade', 'squareswire',
+  'squeeze',               'swap',              'undulatingBurnOut',
+  'wind',                  'windowblinds',      'windowslice',
+  'wipeDown',              'wipeLeft',          'wipeRight',
+  'wipeUp',                'directional-left',  'directional-right',
+  'directional-down',      'directional-up'
+]
 /**
  * 元素未指定 duration 时的兜底时长(秒)
  * 仅对纯视觉元素(text/image/rect/circle/svg)生效,
@@ -84,6 +133,19 @@ class Creator {
     this.width = options.width || 1920;
     this.height = options.height || 1080;
     this.fps = options.fps || 30;
+	this.transactions=PRESET_TRANSACTIONS
+	this.animations=PRESET_ANIMATIONS
+
+    /**
+     * 随机转场/动画配置
+     * @param {boolean} [options.randomTransition.enabled=false]   开启随机转场
+     * @param {boolean} [options.randomTransition.animations=false]  同时随机元素动画(每元素从 PRESET_ANIMATIONS 随机选一个)
+     */
+    this.randomTransition = {
+      enabled: false,
+      animations: false,
+      ...(options.randomTransition || {}),
+    };
 
     this.ttsConfig = {
       enabled: false,
@@ -119,7 +181,22 @@ class Creator {
    * @param {Object} [options.subtitleStyle]        副标题样式
    * @param {string} [options.transition='fade']    切到下一个场景的转场名,传 null 不使用转场
    */
+  /**
+   * 从数组中随机返回一个元素
+   */
+  _randomFrom(arr) {
+    if (!arr || !arr.length) return null;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
   addCover(options = {}) {
+    const transition =
+      options.transition !== undefined
+        ? options.transition
+        : this.randomTransition.enabled
+          ? this._randomFrom(this.transactions)
+          : 'fade';
+
     this.cover = {
       background: options.background || '#1a1a2e',
       duration: options.duration, // 不再兜底,未指定时由 _buildSection 自动汇总
@@ -127,7 +204,7 @@ class Creator {
       subtitle: options.subtitle || '',
       titleStyle: options.titleStyle || {},
       subtitleStyle: options.subtitleStyle || {},
-      transition: options.transition === undefined ? 'fade' : options.transition,
+      transition,
     };
     return this;
   }
@@ -142,12 +219,31 @@ class Creator {
    * @param {Array}  [options.contents]            elements 的别名
    */
   addSlide(options = {}) {
-    const elements = options.elements || options.contents || [];
+    const rawElements = options.elements || options.contents || [];
+    const elements = rawElements.map(el => {
+      const cloned = { ...el };
+      if (
+        this.randomTransition.animations &&
+        cloned.animations === undefined &&
+        ['text', 'subtitle', 'image', 'rect', 'circle'].includes(cloned.type)
+      ) {
+        cloned.animations = [this._randomFrom(this.animations)];
+      }
+      return cloned;
+    });
+
+    const transition =
+      options.transition !== undefined
+        ? options.transition
+        : this.randomTransition.enabled
+          ? this._randomFrom(this.transactions)
+          : null;
+
     this.slides.push({
       background: options.background || '#1a1a2e',
-      duration: options.duration, // 不再兜底,未指定时由 _buildSection 自动汇总
-      transition: options.transition === undefined ? null : options.transition,
-      elements: elements.map(el => ({ ...el })),
+      duration: options.duration,
+      transition,
+      elements,
     });
     return this;
   }
@@ -157,14 +253,21 @@ class Creator {
    * @param {Object} options 同 addCover
    */
   addFooter(options = {}) {
+    const transition =
+      options.transition !== undefined
+        ? options.transition
+        : this.randomTransition.enabled
+          ? this._randomFrom(this.transactions)
+          : 'fade';
+
     this.footer = {
       background: options.background || '#1a1a2e',
-      duration: options.duration, // 不再兜底,未指定时由 _buildSection 自动汇总
+      duration: options.duration,
       title: options.title || '',
       subtitle: options.subtitle || '',
       titleStyle: options.titleStyle || {},
       subtitleStyle: options.subtitleStyle || {},
-      transition: options.transition === undefined ? 'fade' : options.transition,
+      transition,
     };
     return this;
   }
@@ -324,7 +427,6 @@ class Creator {
       sceneDuration = Math.max(calculatedTotal, fallback);
     }
 	
-	console.log(sceneDuration,'===',startTime)
     // 4. 创建场景
     const scene = mainTrack.createScene({
       duration: sceneDuration,

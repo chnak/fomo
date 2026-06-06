@@ -119,6 +119,10 @@ const creator = new Creator({
     model: 'speech-2.8-hd',
     apiKey: null,        // 可在此传入 API Key，或通过 MINIMAX_API_KEY 环境变量
   },
+  randomTransition: {    // 随机转场/动画配置
+    enabled: false,       // 开启后，每个未显式指定 transition 的场景随机选择转场
+    animations: false,    // 开启后，未指定 animations 的元素随机选择一个入场动画
+  },
 });
 ```
 
@@ -134,11 +138,13 @@ creator.addCover({
   subtitle: '2025 年度总结',            // 副标题
   background: '#1a1a2e',               // 背景色，默认 #1a1a2e
   duration: 3,                         // 片头时长（秒），默认 3
-  transition: 'fade',                   // 转场名称，传 null 禁用
+  transition: 'fade',                   // 转场名称，传 null 禁用；未指定时由 randomTransition.enabled 决定
   titleStyle: { fontSize: 72, color: '#ffe66d' },  // 主标题样式覆盖
   subtitleStyle: { fontSize: 36, color: '#ffffff' }, // 副标题样式覆盖
 });
 ```
+
+> **随机转场说明：** 当 `new Creator({ randomTransition: { enabled: true } })` 时，所有未显式指定 `transition` 的场景（cover/slide/footer）自动从 100+ 种预设转场中随机选取一个。显式指定 `transition` 的场景不受影响。
 
 ---
 
@@ -146,11 +152,12 @@ creator.addCover({
 
 添加内容页，可调用多次。
 
+
 ```js
 creator.addSlide({
   background: '#16213e',               // 背景色
   duration: 6,                          // 页面时长（秒），默认自动汇总
-  transition: 'CrossZoom',             // 转场名称，传 null 禁用
+  transition: 'CrossZoom',             // 转场名称，传 null 禁用；未指定时由 randomTransition.enabled 决定
   elements: [                          // 元素数组，见下表
     { type: 'text', text: '第一页', x: '50%', y: '18%', fontSize: 64, color: '#ffe66d', anchor: [0.5, 0.5], animations: ['fadeIn'] },
     {

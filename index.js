@@ -458,10 +458,12 @@ class Creator {
       maxWorkers: 4,
       ...options,
     };
-
+	const videoMaker = this._builder.build();
     try {
-      return await this._builder.render(finalPath, renderOptions);
+      return await videoMaker.export(finalPath, renderOptions);
     } finally {
+		videoMaker.destroy();
+		this._builder.destroy();
       // 渲染结束再清理 TTS 临时文件
       if (!options.keepTtsAudio && tts && this._ttsAudioFiles.length) {
         try {

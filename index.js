@@ -610,7 +610,7 @@ class Creator {
       return ttsResult.duration || DEFAULT_ELEMENT_DURATION;
     }
 
-    return DEFAULT_ELEMENT_DURATION;
+    return el.duration;
   }
 
   /**

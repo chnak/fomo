@@ -681,6 +681,8 @@ class Creator {
         break;
 
       case 'video':
+	    rest.cutFrom=rest.cutFrom||0
+		rest.cutTo=rest.cutTo||scene.duration
         scene.addVideo(withDefaultAnchor({ ...rest, startTime}));
         break;
 

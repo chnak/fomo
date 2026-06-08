@@ -131,6 +131,27 @@ async function main() {
       },
     ],
   });
+  
+  creator.addSlide({
+    background: '#1a1a2e',
+    duration: 8,
+    elements: [
+      {
+		src:"http://vd3.bdstatic.com/mda-qcpgv5huhbhujfpf/360p/h264/1711281253069791287/mda-qcpgv5huhbhujfpf.mp4",
+		x: '50%',
+		y: '50%', 
+		width:"100%",
+		height:"100%",
+		startTime:0,
+		anchor: [0.5, 0.5],
+        type: 'video',
+		fit: 'cover', 
+		mute: true,
+        loop:true,
+		animations: ['fadeIn']
+      },
+    ],
+  });
 
   // 5) 片尾
   creator.addFooter({

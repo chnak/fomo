@@ -51,8 +51,8 @@ async function main() {
   creator.addCover({
     title: '我的第一个视频',
     subtitle: '使用 fkbuilder + TTS 制作',
-	titleStyle:{ fontPath: 'C:/Windows/Fonts/simsun.ttc',},
-	subtitleStytle:{fontPath: 'C:/Windows/Fonts/msyh.ttc',},
+	titleStyle:{ fontPath: 'http://45.77.38.55:28021/down/mqCePBPAU43u.ttc',},
+	subtitleStytle:{fontPath: 'http://45.77.38.55:28021/down/mqCePBPAU43u.ttc',},
     duration: 3
   });
 

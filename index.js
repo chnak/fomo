@@ -544,10 +544,15 @@ class Creator {
 
     // 4.1 cover / footer 的图片背景(如果有)
     if (section._kind !== 'slide' && section.image) {
-      scene.addBackground({
+      scene.addImage(withDefaultAnchor({
+		width:'100%',
+		height:'100%',
+		x:"50%",
+		y:'50%',
         src: section.image.src,
         fit: section.image.fit || 'cover',
-      });
+		zIndex:1
+      }));
     } else if (section.background) {
       // 只有没有图片时才使用颜色背景
       scene.addBackground({ color: section.background });
@@ -567,6 +572,7 @@ class Creator {
           startTime: 0,
           animations: ['fadeIn'],
           ...section.titleStyle,
+		  zIndex:10
         }));
       }
       if (section.subtitle) {
@@ -581,6 +587,7 @@ class Creator {
           startTime: 0,
           animations: ['fadeIn'],
           ...section.subtitleStyle,
+		  zIndex:10
         }));
       }
     }

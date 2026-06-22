@@ -51,6 +51,10 @@ async function main() {
   creator.addCover({
     title: '我的第一个视频',
     subtitle: '使用 fkbuilder + TTS 制作',
+	image:{
+		src:"https://pics3.baidu.com/feed/dc54564e9258d109777298ee907150ae6d814d97.jpeg@f_auto?token=f646ab6eefbc42e7b9f02b344d911fbf",
+		fit:"cover"
+	},
 	titleStyle:{ fontPath: 'http://45.77.38.55:28021/down/mqCePBPAU43u.ttc',},
 	subtitleStytle:{fontPath: 'http://45.77.38.55:28021/down/mqCePBPAU43u.ttc',},
     duration: 3
@@ -134,26 +138,26 @@ async function main() {
     ],
   });
   
-  creator.addSlide({
-    background: '#1a1a2e',
-    duration: 8,
-    elements: [
-      {
-		src:"http://vd3.bdstatic.com/mda-qcpgv5huhbhujfpf/360p/h264/1711281253069791287/mda-qcpgv5huhbhujfpf.mp4",
-		x: '50%',
-		y: '50%', 
-		width:"100%",
-		height:"100%",
-		startTime:0,
-		anchor: [0.5, 0.5],
-        type: 'video',
-		fit: 'cover', 
-		mute: true,
-        loop:true,
-		animations: ['fadeIn']
-      },
-    ],
-  });
+  // creator.addSlide({
+    // background: '#1a1a2e',
+    // duration: 8,
+    // elements: [
+      // {
+		// src:"http://vd3.bdstatic.com/mda-qcpgv5huhbhujfpf/360p/h264/1711281253069791287/mda-qcpgv5huhbhujfpf.mp4",
+		// x: '50%',
+		// y: '50%', 
+		// width:"100%",
+		// height:"100%",
+		// startTime:0,
+		// anchor: [0.5, 0.5],
+        // type: 'video',
+		// fit: 'cover', 
+		// mute: true,
+        // loop:true,
+		// animations: ['fadeIn']
+      // },
+    // ],
+  // });
 
   // 5) 片尾
   creator.addFooter({

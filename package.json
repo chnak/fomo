@@ -7,7 +7,7 @@
   "author": "chnak",
   "license": "MIT",
   "dependencies": {
-    "fkbuilder": "1.1.80",
+    "fkbuilder": "1.1.81",
     "minimax-speech-ts": "^0.4.1"
   }
 }

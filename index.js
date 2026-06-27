@@ -705,6 +705,31 @@ class Creator {
         scene.addSVG(withDefaultAnchor({ ...rest, startTime}));
         break;
 
+      case 'echarts':
+      case 'echart':
+        scene.addECharts(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
+      case 'path':
+        scene.addPath(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
+      case 'json':
+        scene.addJSON(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
+      case 'sprite':
+        scene.addSprite(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
+      case 'oscilloscope':
+        scene.addOscilloscope(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
+      case 'code':
+        scene.addCode(withDefaultAnchor({ ...rest, startTime}));
+        break;
+
       case 'subtitle':
         await this._addSubtitle(scene, audioTrack, el, startTime, sceneStartTime);
         break;

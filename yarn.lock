@@ -738,10 +738,10 @@ file-uri-to-path@1.0.0:
   resolved "https://registry.npmjs.org/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz"
   integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
-fkbuilder@1.1.80:
-  version "1.1.80"
-  resolved "https://registry.yarnpkg.com/fkbuilder/-/fkbuilder-1.1.80.tgz#46c0af3bdd11ef0335a031823e1c8a57551b31a7"
-  integrity sha512-iGZVhPZWdsKej0E1UnXPR0MhYdfSXotJvpDd42sQkgCqzbOSilJibrwrbAII4gdNAPftLtQSKCA+FTgn5KSH8w==
+fkbuilder@1.1.84:
+  version "1.1.84"
+  resolved "https://registry.npmjs.org/fkbuilder/-/fkbuilder-1.1.84.tgz#98e394a297f7070fb2474be181020767f20b494f"
+  integrity sha512-bKc8CCaAlL+ShYe+6mbK+zIijkOLXsj7+rBmg16eJKhW93kKqF7JSyHbGa7JOocD3CCoiLUrqupxwZoul19z3g==
   dependencies:
     "@chnak/paper" "1.0.26"
     "@napi-rs/canvas" "^0.1.99"

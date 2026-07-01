@@ -129,6 +129,67 @@
   dependencies:
     defer-to-connect "^2.0.0"
 
+"@takumi-rs/core-darwin-arm64@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-darwin-arm64/-/core-darwin-arm64-1.8.7.tgz#8ae2b120d8dec57880fcbc3cf611d1bd09919fa0"
+  integrity sha512-an8vc2B/Qf9vo3uwDmJ6WKazpMBpDruRy/kXr+x98GfIkzMHDEUy+9EgNfUYxprtZo49cJruXrVwzxsqqW+1tA==
+
+"@takumi-rs/core-darwin-x64@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-darwin-x64/-/core-darwin-x64-1.8.7.tgz#74f4e83cd74c84d15beedc65cbeb2637850278db"
+  integrity sha512-q0xQxmb4y4EwYK3ILMBvWvqLGX8gxsqcEas0zOwNbPnxBLTQFF8KVH4jXaKXLUFwj020lu8nsf1BNvLIkJMo3Q==
+
+"@takumi-rs/core-linux-arm64-gnu@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-linux-arm64-gnu/-/core-linux-arm64-gnu-1.8.7.tgz#9b53de8641487c9137393aadb9a24bfefa09a075"
+  integrity sha512-uZ6l792M4Mc06XG+m+8RarTgdR5o1ZLjncULKUEPAw3nBKhRbJ50Re3aLM4n4+p25iOj1oL9QwEZRcaJn8u/Ag==
+
+"@takumi-rs/core-linux-arm64-musl@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-linux-arm64-musl/-/core-linux-arm64-musl-1.8.7.tgz#9b511b8ea7de25d0bee853a07e719898c3d27f44"
+  integrity sha512-akVy80ztI2as/b0n0EVCfHNKhibp+Od4ioP49PtX2rQMi6KDtqv3aoCIjaBls8oxzv+4x77/2U9fsWIO2XZQjg==
+
+"@takumi-rs/core-linux-x64-gnu@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-linux-x64-gnu/-/core-linux-x64-gnu-1.8.7.tgz#9ede97f17297dea901ee641ec494cfd034931a21"
+  integrity sha512-SV1YesGs/HfC1CMpSF5SqS6KbL4hDLvD2m54JcfB+X/0xatmo/CS2XleqoIXhSmR+95X8Of5g2vg1a4TAdpcug==
+
+"@takumi-rs/core-linux-x64-musl@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-linux-x64-musl/-/core-linux-x64-musl-1.8.7.tgz#27e3fe0cd638fd6970317f1ff7c86741180d6a9c"
+  integrity sha512-zprYQ/ivPDmYX4tFaONiAzoDJNTANA3kqfIe7SMHZ2YhkfEhYnr3PE3XtBytgB4W/VlTc9WQLyD77SKwPnPuFw==
+
+"@takumi-rs/core-win32-arm64-msvc@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-win32-arm64-msvc/-/core-win32-arm64-msvc-1.8.7.tgz#bf0e0940c1d8f6297dab726b02fe93529b74b819"
+  integrity sha512-2S5YcgIj/c0E3sLzWDcxzlXoPvEjR2xC1v7yODe0CvimlRx95Df6rJ9idTS6E1KNUjDaTfqxTr8Ud4gWqYrrPg==
+
+"@takumi-rs/core-win32-x64-msvc@1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core-win32-x64-msvc/-/core-win32-x64-msvc-1.8.7.tgz#dbc611edde07848fd738290e54da5573a8d5fa21"
+  integrity sha512-sooiM6fL0JN597ciNAFVp9F7YxCW+8hXpwu/7wRMRo0TGQ/KMi1Y94tf1FUu2csCHN0pgy9a3y09y8+qnw3FTw==
+
+"@takumi-rs/core@^1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/core/-/core-1.8.7.tgz#7d25bff9ee25cab1295aae83ec4e0ee3553c3574"
+  integrity sha512-Ia8I3vg0VAQPnzHiYRrd18UgZbIj3X0zMwWMjuTm3yb2TBH1988lPwnnlf+eAfYMwZrutNiXLLtgEnkzsm2gMw==
+  dependencies:
+    "@takumi-rs/helpers" "1.8.7"
+  optionalDependencies:
+    "@takumi-rs/core-darwin-arm64" "1.8.7"
+    "@takumi-rs/core-darwin-x64" "1.8.7"
+    "@takumi-rs/core-linux-arm64-gnu" "1.8.7"
+    "@takumi-rs/core-linux-arm64-musl" "1.8.7"
+    "@takumi-rs/core-linux-x64-gnu" "1.8.7"
+    "@takumi-rs/core-linux-x64-musl" "1.8.7"
+    "@takumi-rs/core-win32-arm64-msvc" "1.8.7"
+    "@takumi-rs/core-win32-x64-msvc" "1.8.7"
+
+"@takumi-rs/helpers@1.8.7", "@takumi-rs/helpers@^1.8.7":
+  version "1.8.7"
+  resolved "https://registry.yarnpkg.com/@takumi-rs/helpers/-/helpers-1.8.7.tgz#442e5458b549423ee799c2bc0ab36ed566f37f95"
+  integrity sha512-5dSR9W8msQ7Asp4TCvUUB9Bt8yLgIc2ASjWtEG4Jn9xSuAVJLWFZ21Xl8HShW5GE6SV5aCCM9BL0NA9YuBWIJw==
+
 "@tootallnate/once@1":
   version "1.1.2"
   resolved "https://registry.npmjs.org/@tootallnate/once/-/once-1.1.2.tgz"
@@ -738,13 +799,15 @@ file-uri-to-path@1.0.0:
   resolved "https://registry.npmjs.org/file-uri-to-path/-/file-uri-to-path-1.0.0.tgz"
   integrity sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==
 
-fkbuilder@1.1.84:
-  version "1.1.84"
-  resolved "https://registry.npmjs.org/fkbuilder/-/fkbuilder-1.1.84.tgz#98e394a297f7070fb2474be181020767f20b494f"
-  integrity sha512-bKc8CCaAlL+ShYe+6mbK+zIijkOLXsj7+rBmg16eJKhW93kKqF7JSyHbGa7JOocD3CCoiLUrqupxwZoul19z3g==
+fkbuilder@1.1.89:
+  version "1.1.89"
+  resolved "https://registry.yarnpkg.com/fkbuilder/-/fkbuilder-1.1.89.tgz#3a3510959ff7bcc8a207f5b2ba49e830140d24b4"
+  integrity sha512-W3ZLE0aVq8LRqy2q+0X1G7miplzsOHDp0S8ckvvE5D60tKguIDmA/ioGPwbWOfddhEieQ1nPsyxThdbsrO4DtA==
   dependencies:
     "@chnak/paper" "1.0.26"
     "@napi-rs/canvas" "^0.1.99"
+    "@takumi-rs/core" "^1.8.7"
+    "@takumi-rs/helpers" "^1.8.7"
     cheerio "1.0.0"
     echarts "^6.0.0"
     execa "^5.1.1"

@@ -730,6 +730,10 @@ class Creator {
         scene.addCode(withDefaultAnchor({ ...rest, startTime}));
         break;
 
+      case 'html':
+        this._addHtml(scene, el, rest, startTime);
+        break;
+
       case 'subtitle':
         await this._addSubtitle(scene, audioTrack, el, startTime, sceneStartTime);
         break;
@@ -741,6 +745,51 @@ class Creator {
       default:
         console.warn(`[Creator] 未知的元素类型: ${type}`);
     }
+  }
+
+  /**
+   * 添加 HTML 元素(由 fkbuilder 内置的 Takumi 渲染 HTML/CSS 为帧)
+   *
+   * 所有 fkbuilder 支持的 HTML 元素配置直接透传:
+   *   html | node            必填其一,HTML 字符串或 Takumi node tree
+   *   x, y, width, height    位置与尺寸,支持 px 和 '%'
+   *   anchor                 锚点,默认 [0.5, 0.5] 与 fomo 其他元素保持一致
+   *   opacity, rotation      透明度与旋转角度
+   *   duration               元素显示时长,不指定走 DEFAULT_ELEMENT_DURATION
+   *   timeOffset             CSS 动画起始偏移(秒),默认 0
+   *   fonts                  字体配置(URL/系统路径/Buffer)
+   *   stylesheets            外部样式表 URL 列表
+   *   keyframes              结构化 @keyframes 定义
+   *   devicePixelRatio       设备像素比
+   *   autoDefaultFont        是否自动注入跨平台 CJK 字体栈,默认 true
+   *   tailwind               true | { css } | { input } 启用 Tailwind
+   *   emoji                  'twemoji' | 'noto' | 'openmoji' | false 等
+   *   animations             入场/出场动画,支持预设名与结构化对象混用
+   *
+   * 注意:
+   *   - 整页铺满场景时(width: '100%' AND height: '100%'),建议显式设置 anchor: [0, 0],
+   *     否则 fomo 默认的 [0.5, 0.5] 锚点会把 HTML 元素向画布中心偏移 half-size,
+   *     出现"画布左下空一块、右上溢出"的现象。
+   */
+  _addHtml(scene, el, rest, startTime) {
+    if (!rest.html && !rest.node) {
+      console.warn('[Creator] html 元素必须提供 html 或 node 字段,已跳过');
+      return;
+    }
+
+    // 全屏意图的友好提示(命中只 warn 一次,避免多元素刷屏)
+    const looksFullscreen =
+      (rest.width === '100%' || rest.width === this.width) &&
+      (rest.height === '100%' || rest.height === this.height);
+    if (looksFullscreen && el.anchor === undefined) {
+      console.warn(
+        '[Creator] 检测到 HTML 元素 width/height = 100%,未指定 anchor。' +
+        'fomo 默认 anchor 为 [0.5, 0.5] (元素中心),若希望整页对齐画布左上角,' +
+        '请显式设置 anchor: [0, 0]。'
+      );
+    }
+
+    scene.addHtml(withDefaultAnchor({ ...rest, startTime }));
   }
 
   /**

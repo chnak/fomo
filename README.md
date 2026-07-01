@@ -426,6 +426,7 @@ const creator = new Creator({
 | `rect` | 矩形 | `x`, `y`, `width`, `height`, `fillColor`, `borderRadius` |
 | `circle` | 圆形 | `x`, `y`, `radius`, `fillColor` |
 | `svg` | SVG | `svgContent`, `width`, `height` |
+| `html` | 任意 HTML/CSS（Takumi 渲染） | `html`/`node`, `tailwind`, `emoji`, `fonts`, `keyframes` 等，详见 [HTML 元素](#html-元素) |
 | `video` | 视频文件 | `src`（时长自动 ffprobe 探测） |
 | `audio` | 音频文件 | `src`（时长自动 ffprobe 探测） |
 
@@ -443,6 +444,228 @@ const creator = new Creator({
   animations: ['fadeIn', 'slideUp'], // 动画名称数组
 }
 ```
+
+---
+
+## HTML 元素
+
+`type: 'html'` 通过 fkbuilder 内置的 [Takumi](https://takumi.kane.tw/) 渲染器，把任意 HTML/CSS 渲染成视频帧。可以理解为"视频中的 Web 页面"。
+
+### 基础用法
+
+```js
+creator.addSlide({
+  background: '#1e1b4b',
+  duration: 5,
+  elements: [
+    {
+      type: 'html',
+      x: '50%', y: '50%',
+      width: 1000, height: 400,
+      // 与 fkbuilder 其他元素保持一致：未指定 anchor 时默认 [0.5, 0.5]，即 (x, y) 是元素中心
+      html: `
+        <div style="width:100%;height:100%;display:flex;align-items:center;
+                    justify-content:center;background:#312e81;border-radius:16px;
+                    color:#fff;font-family:'Microsoft YaHei';font-weight:700;">
+          <span style="font-size:48px;">任意 HTML · 任意样式</span>
+        </div>
+      `,
+      duration: 5,
+    },
+  ],
+});
+```
+
+### 完整示例
+
+参见 [`examples/html-element-demo.js`](./examples/html-element-demo.js)，覆盖：
+- 自定义 HTML/CSS
+- Tailwind 零配置（`tailwind: true`）
+- Emoji 彩色（`emoji: 'twemoji'`）
+- 全屏 HTML（`anchor: [0, 0]`）
+- 结构化 keyframes
+
+运行：
+
+```bash
+node examples/html-element-demo.js
+```
+
+### 配置选项
+
+| 选项 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `html` | `string` | - | HTML 字符串（与 `node` 二选一） |
+| `node` | `object` | - | Takumi node tree 对象 |
+| `x` | `number\|string` | `0` | X 坐标，支持 px 和 `%` |
+| `y` | `number\|string` | `0` | Y 坐标，支持 px 和 `%` |
+| `width` | `number\|string` | `800` | 元素宽度 |
+| `height` | `number\|string` | `600` | 元素高度 |
+| `anchor` | `[number, number]` | `[0.5, 0.5]` | 锚点；全屏 HTML 用 `[0, 0]`（见下方注意事项）|
+| `opacity` | `number` | `1` | 透明度 0–1 |
+| `rotation` | `number` | `0` | 旋转角度（度）|
+| `duration` | `number` | `3` | 元素显示时长，未指定走 `DEFAULT_ELEMENT_DURATION`（3 秒）|
+| `startTime` | `number` | `0` | 元素开始时间（秒）|
+| `timeOffset` | `number` | `0` | CSS 动画起始偏移（秒）|
+| `fonts` | `Array` | 自动中文字体栈 | 字体配置：URL / 系统路径 / Buffer |
+| `stylesheets` | `Array<string>` | - | 外部样式表 URL 列表 |
+| `keyframes` | `object \| array` | - | CSS 动画规则。**Bare / Rich 格式会自动生成 `@keyframes` 并挂上 `animation` 属性**；详见 [CSS 动画（keyframes）](#css-动画keyframes) |
+| `devicePixelRatio` | `number` | - | 设备像素比 |
+| `autoDefaultFont` | `boolean` | `true` | 未声明 `font-family` 时自动注入跨平台 CJK 字体栈 |
+| `tailwind` | `boolean\|object` | `false` | 启用 Tailwind：`true` 用内置 158KB 通用 CSS；`{ input }` / `{ css }` 用自定义 |
+| `emoji` | `boolean\|string` | `'twemoji'` | `'noto'` / `'openmoji'` 等，或 `false` 关闭 Twemoji |
+| `animations` | `Array` | - | 入场 / 出场动画，可混用预设名与结构化对象 |
+
+### 三大亮点
+
+#### 1. 自动中文渲染（`autoDefaultFont`）
+
+未在 HTML 中显式声明 `font-family` 时，fomo 会自动注入跨平台中文字体栈（Windows / macOS / Linux），开箱即可渲染中文。
+
+```js
+{ type: 'html', html: '<div style="font-size:48px;">直接写中文即可</div>' }
+```
+
+> 实测：中文字重请用 `400`（常规）或 `700`（粗体）。**避开 `800 / 900`**，会触发 fake-bold 合成，中文笔画会糊成一团。
+
+#### 2. Emoji 彩色
+
+HTML 里直接写 emoji 字符，会被自动替换为彩色 SVG（默认 Twemoji）：
+
+```js
+{
+  type: 'html',
+  html: `<div style="font-size:120px;text-align:center;">🚀 🎨 ⚡</div>`,
+  emoji: 'twemoji',  // 也可 'noto' / 'openmoji' / 'blobmoji' / false
+}
+```
+
+#### 3. Tailwind CSS
+
+`tailwind: true` 直接启用 fkbuilder 内置的 158KB 通用 Tailwind，不需要安装 `tailwindcss` 也不调任何 CLI：
+
+```js
+{
+  type: 'html',
+  tailwind: true,
+  html: `
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600
+                flex items-center justify-center p-12">
+      <h1 class="text-7xl font-black text-white drop-shadow-lg">零配置 Tailwind</h1>
+    </div>
+  `,
+}
+```
+
+如需自定义主题（`bg-brand` 等），自己预编译一份 CSS，传给 `tailwind: { input }` 或 `tailwind: { css }`。
+
+### 注意事项
+
+1. **全屏 HTML 用 `anchor: [0, 0]`**  
+   fomo 默认锚点 `[0.5, 0.5]`（元素中心）。当 `width/height` 都是 `100%` 时，中心锚点会让 HTML 元素被往画布左上方各偏移 half-size，结果"画布左下空一块、右上溢出"。  
+   ```js
+   { type: 'html', width: '100%', height: '100%', anchor: [0, 0], html: '...' }
+   ```
+   当检测到全屏意图（`width/height` 都是 `100%` 且未指定 anchor）时，控制台会输出一次 warning 提醒。
+
+2. **CSS 动画与时间轴同步**：HTML 内 `@keyframes` 通过 Takumi 每帧注入的 `timeMs` 驱动，自动与视频时间轴同步；可用 `timeOffset` 调整起点。
+
+3. **时长自动解析**：未指定 `duration` 时回落到 `DEFAULT_ELEMENT_DURATION`（3 秒），不会触发 ffprobe 或 TTS。
+
+4. **入场动画可混用**：HTML 元素同样支持 fomo 通用 `animations`，与原生 CSS `@keyframes` 互不冲突。
+
+### CSS 动画（keyframes）
+
+`keyframes` 选项支持四种写法，覆盖"全自动"到"完全手控"全光谱。**Bare / Rich 格式会自动给元素挂上 `animation` 属性**，开箱即用；只有少数需要精控的场景才用底层数组或全手控。
+
+#### 推荐：Bare 格式（最少代码）
+
+直接以 CSS 选择器作为 key，value 就是裸 keyframe 规则。默认值 `1s ease-in-out infinite 0s normal none` 自动应用：
+
+```js
+{
+  type: 'html',
+  tailwind: true,
+  keyframes: {
+    '.badge': {
+      '0%':   { transform: 'translateY(0)' },
+      '50%':  { transform: 'translateY(-30px)' },
+      '100%': { transform: 'translateY(0)' },
+    },
+  },
+  html: `<div class="badge ...">弹跳 Badge</div>`,
+}
+```
+
+效果等同于自动注入：
+
+```html
+<style>
+  .badge { animation: fk-anim-badge-0 1s ease-in-out infinite 0s normal none; }
+  @keyframes fk-anim-badge-0 { ... }
+</style>
+```
+
+#### 进阶：Rich 格式（自定义 timing + 多个动画）
+
+每个 selector 下加 `duration` / `easing` / `iteration` / `delay` / `direction` / `fill` / `keyframes` 字段，并可一次声明多个独立动画：
+
+```js
+{
+  type: 'html',
+  tailwind: true,
+  keyframes: {
+    '.title':   { duration: '1.2s', easing: 'ease-out',   iteration: '1', fill: 'forwards',
+                  keyframes: { '0%': {opacity: 0, transform: 'translateY(-40px)'},
+                               '100%': {opacity: 1, transform: 'translateY(0)'} } },
+    '.card':    { duration: '.6s',  easing: 'ease-in-out', iteration: 'infinite',
+                  keyframes: { '0%, 100%': {transform: 'scale(1)'},
+                               '50%':      {transform: 'scale(1.05)'} } },
+    '.spinner': { duration: '1s',   iteration: 'infinite', easing: 'linear',
+                  keyframes: { '0%': {transform: 'rotate(0deg)'},
+                               '100%': {transform: 'rotate(360deg)'} } },
+  },
+  html: `
+    <div class="w-full h-full flex flex-col items-center justify-center gap-6">
+      <div class="spinner ..."></div>
+      <h1 class="title ...">Rich 格式动画</h1>
+      <div class="card ...">Pulse Card</div>
+    </div>
+  `,
+}
+```
+
+#### 完全自控（手写全部 CSS）
+
+如果你想完全掌控命名/keyframes 拼接逻辑，可以绕过 `keyframes` 选项，直接在 HTML 里写 `<style>`：
+
+```js
+{
+  type: 'html',
+  html: `
+    <style>
+      @keyframes myBounce { 0% { transform: translateY(0); } 50% { transform: translateY(-30px); } 100% { transform: translateY(0); } }
+      .badge { animation: myBounce 1.2s ease-in-out infinite; }
+    </style>
+    <div class="badge">手控</div>
+  `,
+}
+```
+
+#### 底层：Takumi 原生数组（向后兼容）
+
+直接传 `KeyframesRuleList`，命名与 `@keyframes` 拼接需自己负责：
+
+```js
+keyframes: [
+  { name: 'spin', keyframes: [
+    { offsets: [0],   declarations: { transform: 'rotate(0deg)' } },
+    { offsets: [1],   declarations: { transform: 'rotate(360deg)' } },
+  ]},
+],
+```
+
+此时仍需在 HTML `<style>` 里手动写 `.elem { animation: spin ... }`。
 
 ---
 
@@ -644,6 +867,14 @@ node examples/basic.js
 
 演示：片头 → 带 TTS 字幕的内容页 → 多元素静态页 → 长字幕页 → 片尾
 
+### html-element-demo.js — HTML 元素示例
+
+```bash
+node examples/html-element-demo.js
+```
+
+演示 `type: 'html'` 的 6 种典型用法：基础 HTML、Tailwind 零配置、Emoji 彩色、全屏 HTML（`anchor: [0, 0]`）、Bare 格式 keyframes（默认 timing 自动应用）、Rich 格式 keyframes（自定义 timing + 多动画）。
+
 ### 时间线预览工作流
 
 ```js
@@ -687,6 +918,7 @@ fomo/
 ├── resource.js      # 网络素材搜索（百度图片/视频）
 ├── package.json
 └── examples/
-    ├── basic.js     # 完整示例
-    └── _test_timeline.js  # 时间线功能测试
+    ├── basic.js              # 完整示例
+    ├── html-element-demo.js  # HTML 元素示例
+    └── _test_timeline.js     # 时间线功能测试
 ```
